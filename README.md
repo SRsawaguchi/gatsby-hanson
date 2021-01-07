@@ -41,7 +41,8 @@ http://localhost:8000
 gatsby develop --host=0.0.0.0
 ```
 
-## ポイント
+## ハンズオン
+差分はコミットログ参照。
 
 ### 新しいページの追加
 `src/pages`ディレクトリの中に、`*.js`を追加する。  
@@ -68,3 +69,39 @@ export default function About() {
 例えば、以下のようなURLになる。  
 
 http://localhost:8000/about
+
+### サブコンポーネント
+ヘッダーなど、共通する部分をコンポーネントとして分割することができる。  
+作成したサブコンポーネントを、それを使いたいところに`import`して使うという流れ。  
+つまり、どこに何を格納するかは自由に決めて良いということ。  
+
+ここでは、サブコンポーネントを格納するディレクトリとして、`src/components`を用意。  
+その中に`*.js`を入れていく。このファイルの中も、先ほどの`pages`と同様にReactコンポーネントとなる。  
+
+以下はサンプルの`src/components/header.js`。  
+
+```javascript
+import React from "react"
+
+export default function Header(props) {
+  return (
+    <h1>{props.headerText}</h1>
+  )
+}
+```
+
+これは以下のように`import`して使うことができる。  
+
+```javascript
+import React from "react"
+import Header from "../components/header"
+
+export default function About() {
+  return (
+    <div style={{color: `teal`}}>
+      <Header headerText="About Gatsby" />
+      <p>Such wow. Very React.</p>
+    </div>
+  )
+}
+```
