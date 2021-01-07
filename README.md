@@ -40,3 +40,31 @@ http://localhost:8000
 ```
 gatsby develop --host=0.0.0.0
 ```
+
+## ポイント
+
+### 新しいページの追加
+`src/pages`ディレクトリの中に、`*.js`を追加する。  
+例えば、`about`ページを作成するなら、`src/pages/about.js`とする。  
+
+このファイルの中身はReactコンポーネント。  
+以下のようになる。  
+
+```javascript
+import React from "react"
+
+export default function About() {
+  return (
+    <div style={{}}>
+      <h1>About Gatsby</h1>
+      <p>Such wow. Very React.</p>
+    </div>
+  )
+}
+
+```
+
+このファイルを追加するだけで、`/about`にアクセスできるようになる。  
+例えば、以下のようなURLになる。  
+
+http://localhost:8000/about
