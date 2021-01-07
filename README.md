@@ -105,3 +105,24 @@ export default function About() {
   )
 }
 ```
+
+### リンク
+Gatsbyで管理しているページ`src/pages`のページへのリンクを表示するには、`<Link />`コンポーネントを利用する。  
+`<Link />`コンポーネントはGatsbyが提供しているものなので、`import`してから使う。  
+
+例えば、`src/pages/contact.js`へのリンクを表示するには、以下のようにする。  
+
+```javascript
+import React from "react"
+import { Link } from "gatsby"
+
+export default function Home() {
+  return (
+    <div style={{ color: `purple`}}>
+      <Link to="/contact/">Contact</Link>
+    </div>
+  )
+}
+```
+
+ちなみに、Gatsbyで管理していない外部のページ（URL）にリンクするには、HTMLのデフォルトの`<a>`タグを使えばよい。  
