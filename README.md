@@ -126,3 +126,62 @@ export default function Home() {
 ```
 
 ちなみに、Gatsbyで管理していない外部のページ（URL）にリンクするには、HTMLのデフォルトの`<a>`タグを使えばよい。  
+
+### スタイル
+
+#### CSSを直接読み込む
+そのサイト全体に適用するCSSを直接読み込む場合、プロジェクト直下に`gatsby-browser.js`ファイルを作成して、その中に`import`すれば良い。  
+このサンプルでは、`src/styles.global.css`ファイルを作成し、それを`gatsby-browser.js`で読み込んでいる。  
+
+```javascript
+import "./src/styles/global.css"
+```
+※このように、`gatsby-browser.js`に`import`するだけで、CSSを直接読み込むことができる。  
+
+
+#### CSS Modulesを使う
+CSSをモジュール化することができる。  
+モジュール化したCSSをReactコンポーネントで`import`して使える。  
+この際、クラス名は自動的にユニークな名前が割り当てられるため、サイトの中でクラス名が衝突する心配はない。  
+
+ここでは、`src/components`ディレクトリに`container.js`を作成する。そして、この`Container`コンポーネントに適用するスタイルを`src/components/container.module.css`に記述する。  
+
+※ここで、`*.module.css`というファイル名にするのは重要で、このパターンのファイル名にすることで、Gatsbyに「これはCSS Modulesのファイルだ」と認識させることができる。  
+
+`container.js`では、以下のようにして`container.module.css`を`import`する。  
+
+```javascript
+import React from "react"
+import containerStyles from "./container.module.css"
+
+export default function Container({ children }) {
+  return (
+    <div className={containerStyles.container}>{children}</div>
+  );
+}
+```
+
+`className`に、`*.module.css`ファイルで定義したクラス名を指定する。  
+例えば、`className={containerStyles.container}`という記述は以下のスタイルを参照している。  
+
+```css
+.container {
+  margin: 3rem auto;
+  max-width: 600px;
+}
+```
+
+`import`したCSSは以下のようなオブジェクトになっている。  
+
+```json
+{
+   "user":"about-css-modules-module--user--2CXbd",
+   "avatar":"about-css-modules-module--avatar--2lRF7",
+   "description":"about-css-modules-module--description--ev5yS",
+   "username":"about-css-modules-module--username--2EBkm",
+   "excerpt":"about-css-modules-module--excerpt--2Itwq"
+}
+```
+
+これらは、`CSSで定義したクラス名`と`自動で割り当てられたユニークなクラス名`の連想配列になっている。  
+
