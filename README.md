@@ -292,3 +292,62 @@ docker-compose exec web \
     npm install typography-theme-kirkham gatsby-plugin-emotion @emotion/react
 ```
 
+#### pages下でのGraphQLの利用
+ここでは、サイトのタイトルを`gatsby-config.js`に書き出し、それを読み出してみる。  
+
+以下のように、`gatsby-config.js`にサイトのタイトルを設定する。  
+※`gatsby-config.js`に書いたものもGraphQLで取得できるみたい。  
+
+```javascript
+module.exports = {
+  siteMetadata: {
+    title: `Title from siteMetadata`,
+  },
+  plugins: [
+    `gatsby-plugin-emotion`,
+    {
+      resolve: `gatsby-plugin-typography`,
+      options: {
+        pathToConfigModule: `src/utils/typography`,
+      },
+    },
+  ],
+}
+```
+
+これを`src/pages/about.js`で利用する。  
+以下の点に注目。  
+
+- Gatsbyが提供している`graphql`を`import`する。
+- `query`という変数にGraphQLクエリを格納している。  
+- GraphQLクエリの実行結果`About()`関数の引数`data`で取得できる。
+
+```javascript
+import React from "react"
+import Layout from "../components/layout"
+import { graphql } from "gatsby"
+
+export default function About({ data }) {
+  return (
+    <Layout>
+      <h1>About {data.site.siteMetadata.title}</h1>
+      <!-- 省略 -->
+    </Layout>
+  )
+}
+
+export const query = graphql`
+  {
+    site {
+      siteMetadata {
+        title
+      }
+    }
+  }
+`
+```
+
+このように、複数のページで利用するデータを外に出しておくと、その値を編集するときに1カ所のみ変更すれば良くなる。(DRY)  
+また、このように`pages`配下のコンポーネントは`page query`といって、そのページを描画するのに必要なデータをGraphQLで記述しておける。  
+一方で、これは`pages`配下のコンポーネントしか使えない。  
+例えば、`layout.js`のように、`pages`以外のコンポーネントでは、次に触れてみる`StaticQuery`を使う必要がある。  
