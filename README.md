@@ -223,3 +223,60 @@ module.exports = {
 
 あとは、`src/pages/index.js`などを編集したりアクセスしたりして`Typography.js`によって見た目が変更されていることを確認する。  
 ※プラグインの追加などを行った場合は、いちど開発サーバを再起動する必要がある。  
+
+#### レイアウトコンポーネントの作成
+Gatsbyでは、レイアウトにもReactコンポーネントを使う。  
+※レイアウトのための特殊な仕組みが用意されているというわけではない。  
+
+ここでは、`src/components/layout.js`というコンポーネントを作成する。  
+今回は単純に各ページへのリンクがついたナビゲーションと、簡単なサイトのタイトルを表示するようなレイアウトを作成する。  
+
+```javascript
+import React from "react"
+import { Children } from "react"
+import { Link } from "gatsby"
+
+const ListLink = props => (
+  <li style={{ display: `inline-block`, marginRight: `1rem` }}>
+    <Link to={props.to}>{props.children}</Link>
+  </li>
+)
+
+export default function Layout({ children }) {
+  return (
+    <div style={{ margin: `3rem auto`, maxWidth: 650, padding: `0 1rem` }}>
+      <header style={{ marginBottom: `1.5rem` }}>
+        <Link to="/" style={{ textShadow: `none`, backgroundImage: `none` }}>
+          <h3 style={{ display: `inline`}}>MySweetSite</h3>
+        </Link>
+        <ul style={{ listStyle: `none`, float: `right` }}>
+          <ListLink to="/">Home</ListLink>
+          <ListLink to="/about/">About</ListLink>
+          <ListLink to="/contact/">Contact</ListLink>
+        </ul>
+      </header>
+      {children}
+    </div>
+  )
+}
+```
+
+あとはこのようなレイアウト用のコンポーネントを各種ページで`import`して利用するだけ。  
+通常のコンポーネントを利用する場合と同じ。  
+
+以下は`src/pages/contact.js`でこのレイアウトを利用した場合の例。  
+
+```javascript
+import React from "react"
+import Header from "../components/header"
+import Layout from "../components/layout"
+
+export default function About() {
+  return (
+    <Layout style={{color: `teal`}}>
+      <Header headerText="About Gatsby" />
+      <p>Such wow. Very React.</p>
+    </Layout>
+  )
+}
+```
