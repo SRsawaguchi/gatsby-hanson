@@ -280,3 +280,15 @@ export default function About() {
   )
 }
 ```
+
+### サイトのデータの扱い
+GraphQLを使ってサイトのデータをReactコンポーネントの外に置く方法。  
+
+まずは、このハンズオンで必要なプラグインを`npm`でインストールする。  
+※前回のハンズオンで`Typography.js`などのインストールが完了しているため、差分のみインストールする。  
+※`docker-compose up`をしてコンテナが起動している状態で以下のコマンドを実行する。  
+```
+docker-compose exec web \
+    npm install typography-theme-kirkham gatsby-plugin-emotion @emotion/react
+```
+
