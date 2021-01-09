@@ -185,3 +185,41 @@ export default function Container({ children }) {
 
 これらは、`CSSで定義したクラス名`と`自動で割り当てられたユニークなクラス名`の連想配列になっている。  
 
+### レイアウト
+
+#### プラグインの利用
+Gatsbyにはプラグインがたくさんある。  
+ここでは、`Typography.js`のGatsbyプラグインを使ってみる。  
+
+まずは、このハンズオンで必要なプラグインを`npm`でインストールする。  
+※`docker-compose up`をしてコンテナが起動している状態で以下のコマンドを実行する。  
+```
+docker-compose exec web \
+    npm install gatsby-plugin-typography react-typography typography typography-theme-fairy-gates
+```
+
+インストールが完了したら、`gatsby-config.js`を編集する。  
+`gatsby-config.js`は特殊なファイルで、サイトに関する設定を記述できる。  
+
+ここでは、先ほどインストールしたプラグイン`gatsby-plugin-typography`のための設定を追加する。  
+※使い方は以下のURLを参照。  
+https://www.gatsbyjs.com/plugins/gatsby-plugin-typography/
+
+```javascript
+module.exports = {
+  plugins: [
+    {
+      resolve: `gatsby-plugin-typography`,
+      options: {
+        pathToConfigModule: `src/utils/typography`,
+      },
+    },
+  ],
+}
+```
+
+そして、先ほど設定した通り、`src/utils/typography`に各種設定を追加する。  
+※ここら辺は利用するプラグインごとに、使い方をみて適宜必要な設定を追加する感じになる。  
+
+あとは、`src/pages/index.js`などを編集したりアクセスしたりして`Typography.js`によって見た目が変更されていることを確認する。  
+※プラグインの追加などを行った場合は、いちど開発サーバを再起動する必要がある。  
