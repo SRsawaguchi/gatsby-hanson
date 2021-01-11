@@ -521,3 +521,83 @@ module.exports = {
 ```
 
 その後、開発サーバを再起動する。  
+
+#### TransformerPluginの利用
+ここでは実際にTransformerPlugin（`gatsby-transformer-remark`）を使ってみる。  
+このプラグインの結果はGraphQLで取得できる。  
+つまり、プラグインが有効になっていると、GraphQLで取得できるデータがその分増えると言うこと。  
+
+GraphQL IDEにアクセスすると、左側のExplorerに`allMarkdownRemark`が現れており、GraphQLでこのデータを取得することで、TransformerPluginの出力結果を取得できる。
+
+ここでは、その一連のプロセスを試してみる。  
+
+まずは、Markdownのファイルを追加する。  
+ここでは、`src/pages/sweet-pandas-eating-sweets.md`を作成し、以下の内容を保存する。  
+
+```markdown
+---
+title: "Sweet Pandas Eating Sweets"
+date: "2017-08-10"
+---
+
+Pandas are really sweet.
+
+Here's a video of a panda eating sweets.
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/4n0xNbfJLR8" frameborder="0" allowfullscreen></iframe>
+```
+
+その後、GraphQL IDEにアクセスすると、Explorerに`allMarkdownRemark`というのが現れている。  
+これをいくつか試すと、HTMLに変換したものが取得できることがわかる。  
+
+つづいて、この情報を`index.js`に表示してみる。  
+`src/pages/index.js`を以下のように書き換える。  
+
+```javascript
+import React from "react"
+import Layout from "../components/layout"
+import { graphql } from "gatsby"
+// ...各種インポートを省略...
+
+export default function Home({ data }) {
+  return (
+    <Layout>
+        <!-- 省略 -->
+        <h4>{data.allMarkdownRemark.totalCount} Posts</h4>
+        <!-- ここでmarkdownから読み取ったデータを描画していく。 -->
+        {data.allMarkdownRemark.edges.map(({ node }) => (
+          <div key={node.id}>
+            <h3>
+              {node.frontmatter.title}{" "}
+              <span> - {node.frontmatter.date}</span>
+            </h3>
+            <p>{node.excerpt}</p>
+          </div>
+        ))}
+      </div>
+    </Layout>
+  )
+}
+
+// GraphQLを使ってデータを取得(TransformerPluginより取得)
+export const query = graphql`
+  query {
+    allMarkdownRemark {
+      totalCount
+      edges {
+        node {
+          id
+          frontmatter {
+            title
+            date(formatString: "DD MMMM, YYYY")
+          }
+          excerpt
+        }
+      }
+    }
+  }
+`
+```
+
+この状態で以下のURLにアクセスすると、記事の一覧が表示される。  
+http://localhost:8000/  
