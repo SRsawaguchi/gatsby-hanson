@@ -351,3 +351,36 @@ export const query = graphql`
 また、このように`pages`配下のコンポーネントは`page query`といって、そのページを描画するのに必要なデータをGraphQLで記述しておける。  
 一方で、これは`pages`配下のコンポーネントしか使えない。  
 例えば、`layout.js`のように、`pages`以外のコンポーネントでは、次に触れてみる`StaticQuery`を使う必要がある。  
+
+#### pageコンポーネント以外でのGraphQLの利用
+`page query`は`pages`配下のコンポーネントしか使えない。  
+pageコンポーネント以外(`non-page component`)では、`StaticQuery`を使う。  
+ここでは、`layout.js`を修正し、サイトのタイトルをGraphQLで取得する。  
+
+```javascript
+import React from "react"
+// ...各種インポートを省略...
+// StaticQueryを使うのに必要なgraphqlとuseStaticQueryをimportする。
+import { graphql, useStaticQuery, Link } from "gatsby"
+
+export default function Layout({ children }) {
+  // StaticQueryを使ってデータを取得
+  const data = useStaticQuery(
+    graphql`
+      query {
+        site {
+          siteMetadata {
+            title
+          }
+        }
+      }
+    `
+  )
+
+  return (
+    <!-- 省略 -->
+    {data.site.siteMetadata.title}
+    <!-- 省略 -->
+  )
+}
+```
