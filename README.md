@@ -491,3 +491,33 @@ export const query = graphql`
 http://localhost:8000/my-files
 
 ※クエリの作成はGraphQL IDEを使うとスムーズ。`Ctrl + space`の入力補完が使えたり、そもそもどんなデータを取得できるのかの一覧が見れたりする。その後、作成したクエリをコピーしてくると良い。  
+
+### TransformerPlugins
+TransformerPluginsを利用することで、データを便利な形に変換することができる。  
+ここでは、Markdownで記述した記事をHTMLに変換してみる。  
+
+#### TransformerPluginのインストール
+まずは、プラグインをインストールする。  
+これについては、これまでにやってきたのと同じ。  
+
+まずは、npmを使って`gatsby-transformer-remark`をインストールする。  
+
+```
+docker-compose exec web \
+    npm install gatsby-transformer-remark
+```
+
+インストールが完了したら、`gatsby-config.js`にプラグインを追加する。  
+
+```javascript
+module.exports = {
+  // ...省略
+  plugins: [
+    // ...省略
+    `gatsby-transformer-remark`,
+    // ...省略
+  ],
+}
+```
+
+その後、開発サーバを再起動する。  
