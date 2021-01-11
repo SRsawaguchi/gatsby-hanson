@@ -390,6 +390,7 @@ export default function Layout({ children }) {
 Gatsbyでは、それ以外にもAPIやファイル、DBやCMSなどからGraphQLを使ってデータを取得できる。  
 それぞれのソースよりデータを取得するためには、取得したいソースに合った`SourcePlugin`をインストールする必要がある。  
 
+#### SourcePluginのインストール
 ここでは、ファイルシステムからからデータを取得してみる。  
 まずは、以下のコマンドを実行して`gatsby-source-filesystem`をインストールする。  
 
@@ -428,3 +429,65 @@ http://localhost:8000/___graphql
 GraphQLのIDEを使ってクエリを作って実行したりして試してみよう。  
 例えば、`allFiles`をクリックして実行すると、ファイルの一覧が出てくるが、ファイル名がない。  
 そこで、`base`をチェックして実行すると、ファイル名が表示される。  
+
+#### SourcePluginの利用
+ここでは、ファイル一覧を表示してみる。  
+`src/pages/my-files.js`を作成して、以下のように記述する。  
+
+```javascript
+import React from "react"
+import { graphql } from "gatsby"
+import Layout from "../components/layout"
+
+// 引数で`data`を受け取っておく。
+export default function MyFiles({ data }) {
+  return (
+    <Layout>
+      <h1>My Site's Files</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>relativePath</th>
+            <th>prettySize</th>
+            <th>extension</th>
+            <th>birthTime</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- 取得したデータをmap()でHTMLにDOMに変換 -->
+          {data.allFile.edges.map(({ node }, index) => (
+            <tr key={index}>
+              <td>{node.relativePath}</td>
+              <td>{node.prettySize}</td>
+              <td>{node.extension}</td>
+              <td>{node.birthTime}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </Layout>
+  )
+}
+
+// データを取得するQuery
+export const query = graphql`
+  query {
+    allFile {
+      edges {
+        node {
+          id
+          relativePath
+          prettySize
+          extension
+          birthTime(fromNow: true)
+        }
+      }
+    }
+  }
+`
+```
+
+この状態で以下のURLにアクセスすると、ファイル一覧が表示される。  
+http://localhost:8000/my-files
+
+※クエリの作成はGraphQL IDEを使うとスムーズ。`Ctrl + space`の入力補完が使えたり、そもそもどんなデータを取得できるのかの一覧が見れたりする。その後、作成したクエリをコピーしてくると良い。  
