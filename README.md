@@ -384,3 +384,47 @@ export default function Layout({ children }) {
   )
 }
 ```
+
+### SourcePlugins
+前回はGraphQLを使って`gatsby-config.js`からデータを取得した。  
+Gatsbyでは、それ以外にもAPIやファイル、DBやCMSなどからGraphQLを使ってデータを取得できる。  
+それぞれのソースよりデータを取得するためには、取得したいソースに合った`SourcePlugin`をインストールする必要がある。  
+
+ここでは、ファイルシステムからからデータを取得してみる。  
+まずは、以下のコマンドを実行して`gatsby-source-filesystem`をインストールする。  
+
+
+※`docker-compose up`をしてコンテナが起動している状態で以下のコマンドを実行する。  
+
+```
+docker-compose exec web \
+    npm install gatsby-source-filesystem
+```
+
+そして、`gatsby-config.js`にこのプラグインの設定を追加する。  
+
+```javascript
+module.exports = {
+  // ... 省略
+  plugins: [
+    // ... 省略
+    {
+      resolve: `gatsby-source-filesystem`,
+      options: {
+        name: `src`,
+        path: `${__dirname}/src/`,
+      },
+    },
+    // ... 省略
+  ],
+}
+```
+
+この記述を追加したら、開発サーバを再起動する。  
+その後、GraphQLのIDEにアクセスすると、左側のExplorerに`file`と`allFiles`が追加されている。  
+※GraphQLのIDEは以下のURLでアクセスする。  
+http://localhost:8000/___graphql
+
+GraphQLのIDEを使ってクエリを作って実行したりして試してみよう。  
+例えば、`allFiles`をクリックして実行すると、ファイルの一覧が出てくるが、ファイル名がない。  
+そこで、`base`をチェックして実行すると、ファイル名が表示される。  
