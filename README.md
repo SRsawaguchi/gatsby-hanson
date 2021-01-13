@@ -601,3 +601,125 @@ export const query = graphql`
 
 この状態で以下のURLにアクセスすると、記事の一覧が表示される。  
 http://localhost:8000/  
+
+### プログラム的ににページを生成する
+Gatsbyを利用すれば、プログラム的にページを生成することができる。  
+ここでは、Markdownからページを生成する。  
+
+ページをプログラム的に生成するには、以下の2つの手順が必要。  
+
+1. ページの`slug`を作成する。
+1. ページを生成するコード（関数）を実行する。
+
+#### slugを生成
+slugを生成するには、プロジェクト直下にある`gatsby-node.js`を使う。（無ければ作る。）  
+このファイルにはNodeが生成されたときのコールバックや、ページを生成する関数を`export`することができる。  
+※`export`した関数はGatsbyに実行される。（名前が必ず一致していないといけない。）
+
+ここでは`onCreateNode`という関数を`export`する。  
+`onCreateNode`は、GraphQLの`nodes`が生成されたときに呼ばれる。  
+ここでは、`MarkdownRemark`がNodeを作成した際に、そのNodeに`slug`とよばれるフィールドを追加する。  
+
+```javascript
+const { createFilePath } = require(`gatsby-source-filesystem`)
+
+exports.onCreateNode = ({ node, getNode, actions }) => {
+  const { createNodeField } = actions
+  if (node.internal.type === `MarkdownRemark`) {
+    const slug = createFilePath({ node, getNode, base: `pages` })
+    createNodeField({
+      node,
+      name: `slug`,
+      value: slug,
+    })
+  }
+}
+```
+- `createFilePath()`は、`MarkdownRemark`の親ノード(`parent`)の`File`ノードにアクセスし、そこから`relativePath`を取得してパスを生成するGatsbyのヘルパープラグイン。  
+- `createNodeField()`は、指定したNodeに、指定した名前と値でフィールドを追加する関数。
+- 作成したフィールドは`fields.<name>`で取得できる。
+
+詳しい説明は以下を参考にする。  
+https://www.gatsbyjs.com/docs/tutorial/part-seven/
+
+#### ページを作成
+続いて、ページを作成していく。  
+まずは、今回作成するページのテンプレートとなるReactコンポーネントを作成する。  
+今回は`src/templates/blog-post.js`を作成する。  
+
+```javascript
+import React from "react"
+import Layout from "../components/layout"
+import { graphql } from "gatsby"
+
+export default function BlogPost({ data }) {
+  const post = data.markdownRemark
+  return (
+    <Layout>
+      <h1>{post.frontmatter.title}</h1>
+      <div dangerouslySetInnerHTML={{ __html: post.html }}></div>
+    </Layout>
+  )
+}
+
+// PageQueryを使ってMarkdownRemarkのnodeを抽出する。
+export const query = graphql`
+  query($slug: String!) {
+    markdownRemark(fields: { slug: { eq: $slug } }) {
+      html
+      frontmatter {
+        title
+      }
+    }
+  }
+`
+```
+
+そして`gatsby-node.js`で、`createPages`を`export`すると、これを実行してページを生成してくれる。  
+
+```javascript
+const { createFilePath } = require(`gatsby-source-filesystem`)
+const path = require(`path`)
+// ...省略
+
+exports.createPages = async ({ graphql, actions }) => {
+  const { createPage } = actions
+  const result = await graphql(`
+    query {
+      allMarkdownRemark {
+        edges {
+          node {
+            fields {
+              slug
+            }
+          }
+        }
+      }
+    }
+  `)
+
+  result.data.allMarkdownRemark.edges.forEach(({node}) => {
+    createPage({
+      path: node.fields.slug, // ここで`onCreateNode`で作成した`slug`フィールドを使う。
+      component: path.resolve(`./src/templates/blog-post.js`),
+      context: {
+        slug: node.fields.slug,
+      }
+    })
+  })
+}
+```
+先ほど作成した`fields.slug`を利用していることに注目。  
+開発サーバを再起動したあと、以下のURLにアクセスすると、そのGatsbyサイトでアクセス可能なURLの一覧が表示される。  
+
+http://localhost:8000/sdf  
+
+このように、全体としてやや込み入っているので注意が必要。  
+以下の点を理解する必要がある。
+
+- まずは`slug`をどのように作成するか考えること。
+- `slug`は`gatsby-node.js`の`onCreateNode`などに書き、`export`すること。
+- `slug`はReactコンポーネントなど、いくつかの部分で利用されるため、`createNodeField()`を使ってフィールド化しておくこと。
+- 作成するページのテンプレートとなるReactコンポーネントを使うこと。（このコンポーネント中ではPageQueryが使える。）
+- ページを作成する処理は`gatsby-node.js`の`createPages`として`export`すること。
+- `gatsby-node.js`ではGraphQLの`node graph`をいったり来たりする必要がある。（GraphQL IDEを活用する。）
