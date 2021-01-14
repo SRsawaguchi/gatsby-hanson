@@ -713,6 +713,7 @@ exports.createPages = async ({ graphql, actions }) => {
 開発サーバを再起動したあと、以下のURLにアクセスすると、そのGatsbyサイトでアクセス可能なURLの一覧が表示される。  
 
 http://localhost:8000/sdf  
+※こちらは、単純に`404`のページに全てのリンクが表示されているというだけで、`sdf`という特殊なパスがあるわけではない。(キーボードの配列の`sdf`、つまり適当に入力したというだけ。)  
 
 このように、全体としてやや込み入っているので注意が必要。  
 以下の点を理解する必要がある。
@@ -723,3 +724,33 @@ http://localhost:8000/sdf
 - 作成するページのテンプレートとなるReactコンポーネントを使うこと。（このコンポーネント中ではPageQueryが使える。）
 - ページを作成する処理は`gatsby-node.js`の`createPages`として`export`すること。
 - `gatsby-node.js`ではGraphQLの`node graph`をいったり来たりする必要がある。（GraphQL IDEを活用する。）
+
+## サイトの公開
+
+### Gatsbyのビルド
+Gatsbyは以下のコマンドでビルドできる。  
+
+```
+gatsby build
+```
+
+コンテナ内で実行する場合は以下のようにする。  
+
+```
+docker-compose exec web \
+    gatsby build
+```
+
+このコマンドを実行すると、`public`ディレクトリに静的なサイトとして出力される。  
+そして、このサイトをローカルで実行するには次のようにする。  
+
+```
+gatsby serve --host=0.0.0.0
+```
+
+こちらも、コンテナ内で実行する場合は以下のようにする。  
+
+```
+docker-compose exec web \
+    gatsby serve --host=0.0.0.0
+```
