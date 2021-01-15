@@ -754,3 +754,29 @@ gatsby serve --host=0.0.0.0
 docker-compose exec web \
     gatsby serve --host=0.0.0.0
 ```
+
+### Auditツール（Lighthouse）の利用
+※この項目では、コードの変更やパッケージのインストールなどは行わない。 
+
+Gatsbyとはあまり関係ないが、Auditツールを使ってサイトの使いやすさ等を検証することができる。  
+ここではGoogle製のAuditツールである`Lighthouse`を使う。  
+
+このページからChromeの拡張機能をインストールする。  
+https://developers.google.com/web/tools/lighthouse/
+
+※コマンドラインで利用可能な`Lighthouse`もある。これを使えばCI/CDパイプラインにも組み込めるかもしれない。  
+
+
+インストールが完了したら、`gatsby serve`で起動したビルド済みのサーバにアクセスする。  
+そこで、Chromeの開発者ツールを起動して、`Lighthouse`タブにアクセスする。  
+アクセスしたら、`Generate report`ボタンをクリックする。  
+
+この設定が完了すると、以下のスコアが表示される。  
+
+- Performance
+- Accessibility
+- Best Practices
+- SEO
+- Progressive Web App
+
+これらのスコアを見ながらサイトを改善していくことができる。  
