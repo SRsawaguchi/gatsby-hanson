@@ -820,3 +820,123 @@ module.exports = {
 
 ※この後はサーバを再起動すれば適用されるはずだが、`sharp`というプラグインのエラーが消えず、いったんスキップした。
 
+### page metadataを追加する
+`react-helmet`ならびに`gatsby-plugin-react-helmet`を利用することで、ページにサイトのメタデータを追加することができる。  
+まずは、この2つのプラグインをインストールする。  
+
+```
+docker-compose exec web \
+    npm install gatsby-plugin-react-helmet react-helmet
+```
+
+続いて、全体で表示させたいメタデータを`gatsby-congig.js`に追記しておく。  
+
+```javascript
+module.exports = {
+  siteMetadata: {
+    title: `Pandas Eating Lots`,
+    description: `A simple description about pandas eating lots...`,
+    author: `sawaguchi`,
+  },
+  // ...省略
+}
+```
+
+続いて、`src/components/seo.js`というコンポーネントを作成する。  
+このコンポーネントは、各ページに表示させるDOMを作成する。  
+
+以下のような内容になる。  
+ここでは、各ページごとに`title`などをカスタマイズできるように、`SEO()`で引数として属性を受け取っている。  
+
+```javascript
+import React from "react"
+import PropTypes from "prop-types"
+import { Helmet } from "react-helmet"
+import { useStaticQuery, graphql } from "gatsby"
+
+function SEO({ description, lang, meta, title }) {
+  const { site } = useStaticQuery(
+    graphql`
+      query {
+        site {
+          siteMetadata {
+            description
+            title
+            author
+          }
+        }
+      }
+    `
+  )
+
+  const metaDescription = description || site.siteMetadata.description
+
+  return (
+    <Helmet
+      htmlAttributes={{
+        lang,
+      }}
+      title={title}
+      titleTemplate={`%s | ${site.siteMetadata.title}`}
+      meta={[
+        {
+          name: `description`,
+          content: metaDescription,
+        },
+        {
+          property: `og:title`,
+          content: title,
+        },
+        {
+          property: `og:description`,
+          content: metaDescription,
+        },
+        {
+          property: `og:type`,
+          content: `website`,
+        },
+      ].concat(meta)}
+    />
+  )
+}
+
+SEO.defaultProps = {
+  description: ``,
+  lang: `en`,
+  meta: [],
+}
+
+SEO.propTypes = {
+  description: PropTypes.string,
+  lang: PropTypes.string,
+  meta: PropTypes.arrayOf(PropTypes.object),
+  title: PropTypes.string.isRequired,
+}
+
+export default SEO
+```
+
+あとは、作成したこのReactコンポーネントを読み込むだけ。  
+ここでは、各ブログポストに`SEO`コンポーネントを読み込んでみる。  
+
+```javascript
+import React from "react"
+import Layout from "../components/layout"
+import SEO from "../components/seo"
+import { graphql } from "gatsby"
+
+export default function BlogPost({ data }) {
+  const post = data.markdownRemark
+  return (
+    <Layout>
+      <SEO title={post.frontmatter.title} description={post.excerpt} />
+      <h1>{post.frontmatter.title}</h1>
+      <div dangerouslySetInnerHTML={{ __html: post.html }}></div>
+    </Layout>
+  )
+}
+
+// ...省略
+```
+
+このように、記事の内容によって動的に`title`を変更することができる。  

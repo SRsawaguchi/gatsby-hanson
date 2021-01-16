@@ -7,6 +7,8 @@
 module.exports = {
   siteMetadata: {
     title: `Pandas Eating Lots`,
+    description: `A simple description about pandas eating lots...`,
+    author: `sawaguchi`,
   },
   plugins: [
     `gatsby-plugin-emotion`,
@@ -34,5 +36,6 @@ module.exports = {
     //     icon: `src/images/icon.png`, // This path is relative to the root of the site.
     //   },
     // },
+    `gatsby-plugin-react-helmet`,
   ],
 }
