@@ -780,3 +780,43 @@ https://developers.google.com/web/tools/lighthouse/
 - Progressive Web App
 
 これらのスコアを見ながらサイトを改善していくことができる。  
+
+### PWAのためのmanifestファイルを追加する
+PWAのためにmanifestファイルを追加する。  
+
+まずは、必要なプラグインをインストールする。  
+
+```
+docker-compose exec web \
+    npm install gatsby-plugin-manifest
+```
+
+つづいて、アイコンを追加する。  
+アイコンは`src/images/icon.png`として保存。今回はGatsbyのチュートリアルがチュートリアル用途のみで公開してくれているアイコンの画像を保存する。  
+このアイコンは、ホーム画面にインストールした際に表示されるものだと思われる。  
+※このアイコンは権利的な問題がありそうなのでcommitしていない。  
+
+後は`gatsby-config.js`に設定を追加する。  
+
+```javascript
+module.exports = {
+  // ...省略
+
+  plugins: [
+    // ...省略
+    {
+      resolve: `gatsby-plugin-manifest`,
+      options: {
+        name: `GatsbyJS`,
+        short_name: `GatsbyJS`,
+        start_url: `/`,
+        background_color: `#6b37bf`,
+        icon: `src/images/icon.png`, // This path is relative to the root of the site.
+      },
+    },
+  ],
+}
+```
+
+※この後はサーバを再起動すれば適用されるはずだが、`sharp`というプラグインのエラーが消えず、いったんスキップした。
+

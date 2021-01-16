@@ -24,5 +24,15 @@ module.exports = {
       },
     },
     `gatsby-transformer-remark`,
+    // {
+    //   resolve: `gatsby-plugin-manifest`,
+    //   options: {
+    //     name: `GatsbyJS`,
+    //     short_name: `GatsbyJS`,
+    //     start_url: `/`,
+    //     background_color: `#6b37bf`,
+    //     icon: `src/images/icon.png`, // This path is relative to the root of the site.
+    //   },
+    // },
   ],
 }
